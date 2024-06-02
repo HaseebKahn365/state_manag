@@ -2,15 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:state_manag/buisiness_logic.dart';
+import 'package:state_manag/Provider_State_Management/buisiness_logic.dart';
 
 class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Categories'),
-      ),
+      //the appbar should also count the total categories in the parent
+      appBar: AppBar(title: Consumer<Parent>(
+        builder: (context, parent, child) {
+          return Text('Categories (${parent.allCategories.length})');
+        },
+      )),
       body: Consumer<Parent>(
         builder: (context, parent, child) {
           return ListView.builder(
