@@ -14,6 +14,7 @@ creating state and then managing the state from a single state instance.
 Imperative state management
 Explicitly manipulating the state from the model class 
 it has a decentralized state 
+
 sync can be chanllenging
 
 Declarative State Management:
