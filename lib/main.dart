@@ -1,192 +1,98 @@
+//Run the app and use changeNotfierProvider
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_manag/buisiness_logic.dart';
+import 'package:state_manag/screens.dart';
 
 void main() {
-  runApp(const App());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => Parent(),
+      child: MyApp(),
+    ),
+  );
 }
 
-class PhotoState {
-  String url;
-  bool selected;
-  bool display;
-  Set<String> tags;
-
-  PhotoState({
-    required this.url,
-    this.selected = false,
-    this.display = true,
-    required this.tags,
-  });
-}
-
-const urls = [
-  'https://th.bing.com/th/id/OIP.MPUscXSAaYFkP6xqB6sl4AHaE7?w=247&h=180&c=7&r=0&o=5&pid=1.7',
-  'https://th.bing.com/th?id=OIP.RebU7PltPDE7_2EeFsSzCAHaI5&w=228&h=273&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2',
-  'https://th.bing.com/th?id=OIP.5D305Qc8oDudBPLkfoV8YgHaDt&w=350&h=175&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2',
-  'https://th.bing.com/th?id=OIP.jWZ0H_GTbVjZEmnHD-UGbgHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2',
-];
-
-class App extends StatefulWidget {
-  const App({super.key});
-
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  bool isTagging = false;
-
-  List<PhotoState> photoStates = List.of(urls.map((e) => PhotoState(url: e, tags: {})));
-  Set<String> tags = {"all", "nature", "cat"};
-
-  void toggleTagging(String? url) {
-    setState(() {
-      isTagging = !isTagging;
-      for (var photoState in photoStates) {
-        if (photoState.url == url && isTagging) {
-          photoState.selected = true;
-        } else {
-          photoState.selected = false;
-        }
-      }
-    });
-  }
-
-  void onPhotoSelect(String url, bool? selected) {
-    setState(() {
-      for (var ps in photoStates) {
-        if (ps.url == url) {
-          ps.selected = selected ?? false;
-        }
-      }
-    });
-  }
-
-  void selectTag(String tag) {
-    setState(() {
-      if (isTagging) {
-        if (tag != 'all') {
-          for (var ps in photoStates) {
-            if (ps.selected) {
-              ps.tags.add(tag);
-              ps.selected = false; // Deselect after tagging
-            }
-          }
-        }
-      } else {
-        for (var ps in photoStates) {
-          ps.display = tag == 'all' ? true : ps.tags.contains(tag);
-        }
-      }
-    });
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stateful widgets',
-      home: GalleryPage(
-        title: 'Gallery',
-        photoStates: photoStates,
-        tags: tags,
-        tagging: isTagging,
-        toggleTagging: toggleTagging,
-        selectTag: selectTag,
-        onPhotoSelect: onPhotoSelect,
-      ),
+      home: CategoryScreen(),
     );
   }
 }
 
-class GalleryPage extends StatelessWidget {
-  final List<PhotoState> photoStates;
-  final String title;
-  final Set<String> tags;
-  final bool tagging;
 
-  final Function toggleTagging;
-  final Function selectTag;
-  final Function onPhotoSelect;
+//This appllication is about managing our activities
+/*
 
-  const GalleryPage({
-    required this.title,
-    required this.tagging,
-    required this.tags,
-    required this.toggleTagging,
-    required this.selectTag,
-    required this.onPhotoSelect,
-    required this.photoStates,
-    super.key,
-  });
+Here is the buisiness logic:
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: GridView.count(
-        primary: false,
-        crossAxisCount: 2,
-        children: List.of(
-          photoStates.where((e) => e.display).map((ps) => Photo(
-                state: ps,
-                selectable: tagging,
-                onLongPress: toggleTagging,
-                onSelect: onPhotoSelect,
-              )),
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: List.of(tags.map((e) => ListTile(
-                title: Text(e),
-                onTap: () {
-                  selectTag(e);
-                  Navigator.of(context).pop();
-                },
-              ))),
-        ),
-      ),
-    );
+class Parent extends ChangeNotifier{
+  List<Category> allCategories = [];
+
+  void addCategory
+}
+
+a parent will maintain all the categories
+
+class Category {
+  String categoryName;
+  List<Activity> activities = [];
+  void addActivity(Activity activity){
+    activities.add(activity);
+    notifyListeners();
+  }
+
+  void removeActivity(Activity activity){
+    activities.remove(activity);
+    notifyListeners();
   }
 }
 
-class Photo extends StatelessWidget {
-  const Photo({super.key, required this.state, required this.selectable, required this.onLongPress, required this.onSelect});
-  final PhotoState state;
-  final bool selectable;
-  final Function onLongPress;
-  final Function onSelect;
 
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> children = [
-      GestureDetector(
-        child: Image.network(state.url),
-        onLongPress: () => onLongPress(state.url),
-      ),
-    ];
 
-    if (selectable) {
-      children.add(Positioned(
-        left: 20,
-        top: 0,
-        child: Theme(
-          data: Theme.of(context).copyWith(unselectedWidgetColor: Colors.grey[200]),
-          child: Checkbox(
-            onChanged: (value) => onSelect(state.url, value),
-            value: state.selected,
-          ),
-        ),
-      ));
-    }
+each category is gonna have activities and each activity will maintain recrords
 
-    return Container(
-      padding: const EdgeInsets.only(top: 10),
-      color: Colors.black,
-      child: Stack(
-        children: children,
-      ),
-    );
+class Activity extends ChangeNotifierProvider{
+  String activityName;
+  List<Record> records = [];
+
+  void addRecord(Record record){
+    records.add(record);
+    notifyListeners();
   }
+
+  void removeRecord(Record record){
+    records.remove(record);
+    notifyListeners();
+  }
+
 }
+
+a record simply has and id and integer value
+class Record {
+  DateTime timestamp;
+  int count;
+
+  }
+
+
+User interface:
+On the main screen we will display all the categories in the parent;
+using the floating action button we should be able to create category using the alert diaglogue box.
+As the category is added. the category shoudl appear in a listview using a list tile..
+The list tile will have the name of the category and on the trailing side the nuumber of activities that are inside this category
+
+When we press on the category we should navigate to another screen and we should be able to see all the activities in that category in a listview
+the list tile of the 
+the floating action button is gonna be used to add activities to the category.
+we are gonna use an alert dialogue box to take the inpu of the activity name and add it to the list of activities in the category
+
+When we press on the activity in the category we should navigate to the activity screen and we should be able to see all the records in that activity in a listview
+but this interface is gonna be different. 
+there is a count text fiel that takes integer input to indicate the count of the record and along side we will have and add button that adds the record to the list of
+records in the activity. when we press the add button we add the record of the count and also recrord the timestamp of record creation. this record will automaticaly appear in the 
+listile below that is showing the records of the acctivity.
+
+ */
