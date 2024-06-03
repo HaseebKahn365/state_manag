@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:state_manag/buisiness_logic_getx.dart';
+import 'package:state_manag/Getx_State_Management/buisiness_logic_getx.dart';
 
 class CategoryScreen extends StatelessWidget {
   final ParentController parentController = Get.find();
