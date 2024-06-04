@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 /*
 This application is about the university. 
 It allows the students to take exams and allows the teacher to create exams and subjects. Here are the specific details about the interface of the application.
@@ -25,10 +27,6 @@ Drawer widget allows teachers to view his credentials. The main screen allows hi
 
 
 Here are the data structure for the applicattion:
-
-University:
-List<Student> students,
-List<Teacher> teachers,
 
 Student:
 String name,
@@ -65,12 +63,26 @@ Course and subject are the same entities.
 Map<int, Map<int, String>> options,
 Map<int, int> correctAnswer,
 Map<int, int> selectedAnswer,
-List<int> eachQuestionTotalMarks,
+String subjectiveQuestion,
 List<int> eachQuestionTotalMarks,
 List<int> correctMCQs,
 int minutes,
 
 
+
+
+
+
+ */
+
+//we are gonna be using the provider package for state management.
+
+// University:
+// List<Student> students,
+// List<Teacher> teachers,
+// methods for adding students and teachers
+
+import 'package:flutter/material.dart';
 
 class University with ChangeNotifier {
   List<Student> students = [];
@@ -84,6 +96,46 @@ class University with ChangeNotifier {
   void addTeacher(Teacher teacher) {
     teachers.add(teacher);
     notifyListeners();
+  }
+
+  //creating proper methods for getting the student and teacher from login info:
+
+  /*
+  
+      final student = university.getStudent(idController.text, passwordController.text);
+      if (student != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => StudentScreen(student: student)),
+        );
+      } else {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text('Login Failed'), content: Text('Invalid student credentials')));
+      }
+    } else {
+      final teacher = university.getTeacher(idController.text, passwordController.text);
+      if (teacher != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TeacherScreen(teacher: teacher)),
+        );
+   */
+
+  Student? getStudent(String id, String password) {
+    for (var student in students) {
+      if (student.id == id && student.password == password) {
+        return student;
+      }
+    }
+    return null;
+  }
+
+  Teacher? getTeacher(String id, String password) {
+    for (var teacher in teachers) {
+      if (teacher.id == id && teacher.password == password) {
+        return teacher;
+      }
+    }
+    return null;
   }
 }
 
@@ -165,141 +217,4 @@ class Exam {
   }
 
   //only the teacher should be able to add the correct answer the student should be able to only submit the answer.
-}
-
-*/
-
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:state_manag/cep_business_logic.dart';
-import 'package:state_manag/screens/registration.dart';
-import 'package:state_manag/screens/teacher_and_student.dart';
-
-void main() {
-  runApp(UniversityApp());
-}
-
-class UniversityApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => University(),
-      child: MaterialApp(
-        title: 'University App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primarySwatch: Colors.blue,
-        ),
-        home: LoginScreen(),
-      ),
-    );
-  }
-}
-
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  TextEditingController idController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    idController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  void login(bool isStudent) {
-    final university = Provider.of<University>(context, listen: false);
-    if (isStudent) {
-      final student = university.getStudent(idController.text, passwordController.text);
-      if (student != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => StudentScreen(student: student)),
-        );
-      } else {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text('Login Failed'), content: Text('Invalid student credentials')));
-      }
-    } else {
-      final teacher = university.getTeacher(idController.text, passwordController.text);
-      if (teacher != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TeacherScreen(teacher: teacher)),
-        );
-      } else {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text('Login Failed'), content: Text('Invalid teacher credentials')));
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('University Login'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'Student'),
-            Tab(text: 'Teacher'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          buildLoginForm(true),
-          buildLoginForm(false),
-        ],
-      ),
-    );
-  }
-
-  Widget buildLoginForm(bool isStudent) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: idController,
-            decoration: InputDecoration(labelText: 'ID'),
-          ),
-          TextField(
-            controller: passwordController,
-            decoration: InputDecoration(labelText: 'Password'),
-            obscureText: true,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => login(isStudent),
-            child: Text('Login'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RegistrationScreen(isStudent: isStudent)),
-              );
-            },
-            child: Text('Register'),
-          ),
-        ],
-      ),
-    );
-  }
 }
