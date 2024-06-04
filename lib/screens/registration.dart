@@ -19,14 +19,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void register() {
     final university = Provider.of<University>(context, listen: false);
+    if (!checkFields()) {
+      showSnackBar(context, 'Please fill all fields');
+      return;
+    }
     if (widget.isStudent) {
       final student = Student(
         name: nameController.text,
         id: idController.text,
         password: passwordController.text,
         isPaid: isPaid,
-        courses: [],
-        exams: [],
       );
       university.addStudent(student);
 
@@ -36,8 +38,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         name: nameController.text,
         id: idController.text,
         password: passwordController.text,
-        courses: [],
-        exams: [],
       );
       university.addTeacher(teacher);
 
@@ -144,6 +144,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               onPressed: register,
               child: Text('Register'),
             ),
+
+            const SizedBox(height: 20),
+
+            //show total registered students and teachers
           ],
         ),
       ),
@@ -157,5 +161,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         duration: Duration(seconds: 2),
       ),
     );
+  }
+
+  bool checkFields() {
+    if (nameController.text.isEmpty || idController.text.isEmpty || passwordController.text.isEmpty) {
+      return false;
+    }
+    return true;
   }
 }

@@ -16,157 +16,6 @@ Special feature: when asking for password we have password field and confirm pas
 Login screen:
 when the student or teacher presses the login. Also assign a random picture under the name 1 to 6.png from the assets folder we should display alert dialogue box with success or fail icon based on credential found in the system. navigate to the proper screen.
  
-Student functionality:
-the drawer allows the user to view his name and stuff also change password.
-The main screen allows him to see his subscribed courses and exams that are due for tthat course if any.
-
-Teacher’s functionality:
-Drawer widget allows teachers to view his credentials. The main screen allows him to create course and also create exam.
-
-
-Here are the data structure for the applicattion:
-
-University:
-List<Student> students,
-List<Teacher> teachers,
-
-Student:
-String name,
-String id,
-String password,
-bool isPaid,
-List<Course> courses,
-List<Exam> exams
-
-Teacher:
-String name,
-String id,
-String password,
-List<Course> courses,
-List<Exam> exams
-
-
-Exam:
-enum ExamType{
-  quiz,
-  final,
-  mid
-  }
-
-Subject:
-String name,
-String id,
-int creditHours,
-
-Course and subject are the same entities.
-
-
-(For MCQs)
-Map<int, Map<int, String>> options,
-Map<int, int> correctAnswer,
-Map<int, int> selectedAnswer,
-List<int> eachQuestionTotalMarks,
-List<int> eachQuestionTotalMarks,
-List<int> correctMCQs,
-int minutes,
-
-
-
-class University with ChangeNotifier {
-  List<Student> students = [];
-  List<Teacher> teachers = [];
-
-  void addStudent(Student student) {
-    students.add(student);
-    notifyListeners();
-  }
-
-  void addTeacher(Teacher teacher) {
-    teachers.add(teacher);
-    notifyListeners();
-  }
-}
-
-class Student extends ChangeNotifier {
-  String name;
-  String id;
-  String password;
-  bool isPaid;
-  List<Course> courses;
-  List<Exam> exams;
-
-  Student({required this.name, required this.id, required this.password, required this.isPaid, required this.courses, required this.exams});
-
-  void addCourse(Course course) {
-    courses.add(course);
-    notifyListeners();
-  }
-
-  void addExam(Exam exam) {
-    exams.add(exam);
-    notifyListeners();
-  }
-}
-
-class Teacher extends ChangeNotifier {
-  String name;
-  String id;
-  String password;
-  List<Course> courses;
-  List<Exam> exams;
-
-  Teacher({required this.name, required this.id, required this.password, required this.courses, required this.exams});
-
-  void addCourse(Course course) {
-    courses.add(course);
-    notifyListeners();
-  }
-
-  void addExam(Exam exam) {
-    exams.add(exam);
-    notifyListeners();
-  }
-}
-
-class Course {
-  String name;
-  String id;
-  int creditHours;
-
-  Course({required this.name, required this.id, required this.creditHours});
-}
-
-enum ExamType { Quiz, FinalTerm, MidTerm }
-
-class Exam {
-  String name;
-  String id;
-  ExamType type;
-  Map<int, Map<int, String>> options;
-  Map<int, int> correctAnswer;
-  Map<int, int> selectedAnswer;
-  List<String> subjectiveQuestions;
-  List<int> eachQuestionTotalMarks;
-  List<int> correctMCQs;
-  int minutes;
-
-  Exam({required this.name, required this.id, required this.type, required this.options, required this.correctAnswer, required this.selectedAnswer, required this.subjectiveQuestions, required this.eachQuestionTotalMarks, required this.correctMCQs, required this.minutes});
-
-  void addSubjectiveQuestion(String question) {
-    subjectiveQuestions.add(question);
-  }
-
-  void addOption(int questionNumber, Map<int, String> option) {
-    options[questionNumber] = option;
-  }
-
-  void addCorrectAnswer(int questionNumber, int answer) {
-    correctAnswer[questionNumber] = answer;
-  }
-
-  //only the teacher should be able to add the correct answer the student should be able to only submit the answer.
-}
-
 */
 
 import 'package:flutter/material.dart';
@@ -182,8 +31,11 @@ void main() {
 class UniversityApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final university = University();
+    university.mockData();
+
     return ChangeNotifierProvider(
-      create: (context) => University(),
+      create: (context) => university,
       child: MaterialApp(
         title: 'University App',
         debugShowCheckedModeBanner: false,
@@ -298,6 +150,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             },
             child: Text('Register'),
           ),
+          Text('Total Registered Students: ${Provider.of<University>(context).students.length}'),
+          Text('Total Registered Teachers: ${Provider.of<University>(context).teachers.length}'),
         ],
       ),
     );
